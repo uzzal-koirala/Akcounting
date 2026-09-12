@@ -1,0 +1,64 @@
+"use client";
+
+import Link from "next/link";
+import { useActionState, useState } from "react";
+import { AlertCircle, ArrowRight, BarChart3, Check, Eye, EyeOff, Landmark, LockKeyhole, Mail, Phone, ShieldCheck, Sparkles, UserRound } from "lucide-react";
+
+import { loginUser, registerUser, requestPasswordReset, type AuthFormState, type RequestPasswordResetState } from "@/actions/auth";
+import { TurnstileWidget } from "@/components/turnstile-widget";
+
+type AuthMode = "login" | "register" | "forgot";
+type AuthCardProps = { mode?: AuthMode; referralCode?: string | null };
+const benefits = ["Track every rupee with clarity", "Smart reports in a few clicks", "Secure access for your whole team"];
+
+export function AuthCard({ mode = "login", referralCode = null }: AuthCardProps) {
+  const [showPassword, setShowPassword] = useState(false);
+  const isRegister = mode === "register";
+  const isForgot = mode === "forgot";
+  const heading = isRegister ? "Create your account" : isForgot ? "Reset your password" : "Welcome back";
+  const copy = isRegister ? "Start managing your business finances with confidence." : isForgot ? "Enter your email and we’ll send you a secure reset link." : "Sign in to continue to your AKCounting workspace.";
+
+  const action = isRegister ? registerUser : loginUser;
+  const [state, formAction, pending] = useActionState<AuthFormState, FormData>(action, undefined);
+  const [forgotState, forgotFormAction, forgotPending] = useActionState<RequestPasswordResetState, FormData>(requestPasswordReset, undefined);
+  const loading = isForgot ? forgotPending : pending;
+
+  return (
+    <section className="auth-page mx-auto grid w-full max-w-[1080px] overflow-hidden rounded-[28px] border border-violet-100 bg-white shadow-[0_30px_90px_rgba(76,29,149,0.14)] lg:grid-cols-[0.9fr_1.1fr]">
+      <aside className="relative hidden min-h-[680px] overflow-hidden bg-gradient-to-br from-violet-950 via-violet-800 to-violet-700 p-10 text-white lg:flex lg:flex-col">
+        <div className="absolute -right-24 -top-20 size-80 rounded-full bg-violet-400/20 blur-3xl" />
+        <div className="absolute -bottom-28 -left-20 size-80 rounded-full bg-violet-300/20 blur-3xl" />
+        <div className="relative flex items-center gap-3"><span className="grid size-11 place-items-center rounded-lg bg-white/15 shadow-inner ring-1 ring-white/20"><Landmark size={21} /></span><div><p className="text-lg font-semibold tracking-tight">AKCounting</p><p className="text-[9px] font-medium uppercase tracking-[0.24em] text-violet-200">by Nepsus</p></div></div>
+        <div className="relative my-auto py-12"><span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] font-medium text-violet-100"><Sparkles size={12} />Simple finances. Smarter decisions.</span><h2 className="mt-6 max-w-sm text-[34px] font-semibold leading-[1.18] tracking-tight">Your complete financial picture, beautifully organized.</h2><p className="mt-4 max-w-sm text-[12px] leading-6 text-violet-100/75">Keep income, expenses, invoices, payroll, and reports together in one calm workspace.</p><div className="mt-8 space-y-4">{benefits.map((benefit) => <div key={benefit} className="flex items-center gap-3 text-[11px] font-medium text-violet-50"><span className="grid size-6 place-items-center rounded-full bg-violet-400/25 text-violet-100"><Check size={12} strokeWidth={3} /></span>{benefit}</div>)}</div></div>
+        <div className="relative grid grid-cols-3 gap-2 rounded-lg border border-white/10 bg-white/10 p-3 backdrop-blur"><div className="rounded-lg bg-white/10 p-3"><BarChart3 size={15} className="text-violet-200" /><p className="mt-3 text-base font-semibold">Rs 8.4L</p><p className="text-[8px] text-violet-200">Revenue tracked</p></div><div className="rounded-lg bg-white/10 p-3"><ShieldCheck size={15} className="text-violet-200" /><p className="mt-3 text-base font-semibold">100%</p><p className="text-[8px] text-violet-200">Data protected</p></div><div className="rounded-lg bg-white/10 p-3"><UserRound size={15} className="text-violet-200" /><p className="mt-3 text-base font-semibold">12</p><p className="text-[8px] text-violet-200">Team members</p></div></div>
+      </aside>
+
+      <div className="flex min-h-[680px] items-center justify-center px-6 py-10 sm:px-12 lg:px-16">
+        <div className="w-full max-w-[410px]">
+          <div className="mb-8 flex items-center gap-3 lg:hidden"><span className="grid size-10 place-items-center rounded-lg bg-violet-700 text-white shadow-lg shadow-violet-200"><Landmark size={19} /></span><div><p className="font-semibold text-slate-900">AKCounting</p><p className="text-[8px] font-medium uppercase tracking-[0.2em] text-violet-500">by Nepsus</p></div></div>
+          <div><p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-violet-600">{isRegister ? "Get started for free" : isForgot ? "Account recovery" : "Welcome to AKCounting"}</p><h1 className="mt-2 text-[28px] font-semibold tracking-tight text-slate-950">{heading}</h1><p className="mt-2 text-[11px] leading-5 text-slate-500">{copy}</p></div>
+          {!isForgot && <><button type="button" className="mt-7 flex h-11 w-full items-center justify-center gap-3 rounded-lg border border-slate-200 bg-white text-[10px] font-semibold text-slate-700 transition hover:border-violet-300 hover:bg-violet-50/40"><span className="grid size-5 place-items-center rounded-full bg-violet-50 text-sm font-bold text-violet-700">G</span>Continue with Google</button><div className="my-5 flex items-center gap-3"><span className="h-px flex-1 bg-slate-100" /><span className="text-[8px] font-medium uppercase tracking-wider text-slate-400">or continue with email</span><span className="h-px flex-1 bg-slate-100" /></div></>}
+
+          {isRegister && referralCode && <div className="mb-5 flex items-center gap-2.5 rounded-lg border border-violet-100 bg-violet-50 px-3.5 py-2.5"><Sparkles size={14} className="shrink-0 text-violet-600" /><p className="text-[9px] leading-4 text-violet-700">You were invited with code <span className="font-mono font-bold">{referralCode}</span> — sign up to get your welcome discount.</p></div>}
+          <form action={isForgot ? forgotFormAction : formAction} className={isForgot ? "mt-7 space-y-4" : "space-y-4"}>
+            {isRegister && referralCode && <input type="hidden" name="ref" value={referralCode} />}
+            {!isForgot && state?.locked && <p role="alert" className="text-[10px] font-semibold text-rose-600">Your account has been locked. Please contact support.</p>}
+            {!isForgot && state?.error && <p role="alert" className="flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2.5 text-[9px] font-medium text-rose-600"><AlertCircle size={13} className="shrink-0" />{state.error}</p>}
+            {isForgot && forgotState?.message && <p role="status" className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-[9px] font-medium text-emerald-700"><ShieldCheck size={13} className="shrink-0" />{forgotState.message}</p>}
+            <div className={isRegister ? "grid gap-4 sm:grid-cols-2" : ""}>
+              {isRegister && <label className="block"><span className="mb-1.5 block text-[9px] font-semibold text-slate-600">Full name</span><span className="flex h-11 items-center gap-2 rounded-lg border border-slate-200 bg-slate-50/60 px-3 transition focus-within:border-violet-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-violet-50"><UserRound size={14} className="shrink-0 text-slate-400" /><input name="name" required placeholder="Alex Morgan" className="min-w-0 w-full bg-transparent text-[9px] text-slate-800 outline-none placeholder:text-slate-400" /></span></label>}
+              <label className="block"><span className="mb-1.5 block text-[9px] font-semibold text-slate-600">Email address</span><span className="flex h-11 items-center gap-2 rounded-lg border border-slate-200 bg-slate-50/60 px-3 transition focus-within:border-violet-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-violet-50"><Mail size={14} className="shrink-0 text-slate-400" /><input name="email" type="email" required placeholder="alex@company.com" className="min-w-0 w-full bg-transparent text-[9px] text-slate-800 outline-none placeholder:text-slate-400" /></span></label>
+            </div>
+            {isRegister && <label className="block"><span className="mb-1.5 block text-[9px] font-semibold text-slate-600">Phone number</span><span className="flex h-11 items-center gap-3 rounded-lg border border-slate-200 bg-slate-50/60 px-3.5 transition focus-within:border-violet-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-violet-50"><Phone size={15} className="text-slate-400" /><input name="phone" type="tel" required placeholder="+977 98XXXXXXXX" className="w-full bg-transparent text-[10px] text-slate-800 outline-none placeholder:text-slate-400" /></span></label>}
+            {!isForgot && <div className={isRegister ? "grid gap-4 sm:grid-cols-2" : ""}><label className="block"><span className="mb-1.5 flex items-center justify-between text-[9px] font-semibold text-slate-600"><span>Password</span>{!isRegister && <Link href="/forgot-password" className="text-violet-600 hover:text-violet-800">Forgot password?</Link>}</span><span className="flex h-11 items-center gap-2 rounded-lg border border-slate-200 bg-slate-50/60 px-3 transition focus-within:border-violet-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-violet-50"><LockKeyhole size={14} className="shrink-0 text-slate-400" /><input name="password" type={showPassword ? "text" : "password"} required minLength={isRegister ? 8 : undefined} pattern={isRegister ? "(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}" : undefined} title={isRegister ? "At least 8 characters, including an uppercase letter, a number, and a symbol." : undefined} placeholder={isRegister ? "Uppercase, number & symbol · 8+ characters" : "Enter your password"} className="min-w-0 w-full bg-transparent text-[9px] text-slate-800 outline-none placeholder:text-slate-400" /><button type="button" aria-label={showPassword ? "Hide password" : "Show password"} onClick={() => setShowPassword((value) => !value)} className="shrink-0 text-slate-400 hover:text-violet-600">{showPassword ? <EyeOff size={14} /> : <Eye size={14} />}</button></span></label>{isRegister && <label className="block"><span className="mb-1.5 block text-[9px] font-semibold text-slate-600">Confirm password</span><span className="flex h-11 items-center gap-2 rounded-lg border border-slate-200 bg-slate-50/60 px-3 transition focus-within:border-violet-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-violet-50"><LockKeyhole size={14} className="shrink-0 text-slate-400" /><input name="confirmPassword" type={showPassword ? "text" : "password"} required minLength={8} placeholder="Enter password again" className="min-w-0 w-full bg-transparent text-[9px] text-slate-800 outline-none placeholder:text-slate-400" /></span></label>}</div>}
+            {!isForgot && <label className="flex items-start gap-2.5 text-[9px] leading-4 text-slate-500"><input type="checkbox" name={isRegister ? undefined : "remember"} defaultChecked={!isRegister} required={isRegister} className="mt-0.5 size-3.5 accent-violet-600" />{isRegister ? <span>I agree to the <button type="button" className="font-semibold text-violet-600">Terms of Service</button> and <button type="button" className="font-semibold text-violet-600">Privacy Policy</button>.</span> : <span>Keep me signed in on this device</span>}</label>}
+            {!isRegister && !isForgot && <TurnstileWidget resetSignal={state} />}
+            <button disabled={loading} className="group flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-violet-700 text-[10px] font-semibold text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-800 hover:shadow-xl disabled:opacity-70">{loading ? "Please wait..." : isRegister ? "Create free account" : isForgot ? "Send reset link" : "Sign in to AKCounting"}{!loading && <ArrowRight size={14} className="transition group-hover:translate-x-0.5" />}</button>
+          </form>
+          <p className="mt-6 text-center text-[10px] text-slate-500">{isRegister ? "Already have an account?" : isForgot ? "Remember your password?" : "New to AKCounting?"} <Link href={isRegister || isForgot ? "/login" : "/register"} className="font-semibold text-violet-700 hover:text-violet-900">{isRegister || isForgot ? "Sign in" : "Create an account"}</Link></p>
+          <div className="mt-8 flex items-center justify-center gap-2 text-[8px] text-slate-400"><ShieldCheck size={11} className="text-violet-500" />Your information is protected with bank-level security.</div>
+        </div>
+      </div>
+    </section>
+  );
+}

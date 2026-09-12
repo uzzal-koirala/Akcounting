@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE `User` ADD COLUMN `fiscalYearStartMonth` INTEGER NOT NULL DEFAULT 1,
+    ADD COLUMN `fiscalYearEndMonth` INTEGER NOT NULL DEFAULT 12;

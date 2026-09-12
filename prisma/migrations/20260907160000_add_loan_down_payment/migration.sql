@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Loan` ADD COLUMN `downPayment` DECIMAL(12, 2) NOT NULL DEFAULT 0;

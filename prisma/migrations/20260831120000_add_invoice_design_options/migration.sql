@@ -1,0 +1,3 @@
+ALTER TABLE `Invoice`
+    ADD COLUMN `secondaryColor` VARCHAR(191) NOT NULL DEFAULT '#202733',
+    ADD COLUMN `showPaymentInfo` BOOLEAN NOT NULL DEFAULT true;

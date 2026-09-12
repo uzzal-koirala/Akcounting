@@ -1,0 +1,3 @@
+ALTER TABLE `Invoice`
+    ADD COLUMN `iconColor` VARCHAR(191) NOT NULL DEFAULT '#2563eb',
+    ADD COLUMN `descriptionFontSize` INTEGER NOT NULL DEFAULT 11;

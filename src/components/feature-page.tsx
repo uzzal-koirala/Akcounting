@@ -1,0 +1,2 @@
+import { PageHeader } from "@/components/page-header";
+export function FeaturePage({ title, description }: { title: string; description: string }) { return <div className="space-y-8"><PageHeader title={title} description={description} /><section className="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500">This area is ready for its table, filters, and forms.</section></div>; }
